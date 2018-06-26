@@ -1,0 +1,11 @@
+// Copy contents to your keybindings.json. Vscode does not read this file.
+[
+    { "key": "alt+ctrl+b",         "command": "workbench.action.tasks.runTask",
+        "args": "Build app (alt+ctrl+b)"},
+    { "key": "alt+ctrl+f",         "command": "workbench.action.tasks.runTask",
+        "args": "Flash app (alt+ctrl+f)"},
+    { "key": "alt+ctrl+m",         "command": "workbench.action.tasks.runTask",
+        "args": "Monitor (alt+ctrl+m)"},
+    { "key": "alt+ctrl+r",         "command": "workbench.action.tasks.runTask",
+        "args": "Run app (alt+ctrl+r)"},
+]

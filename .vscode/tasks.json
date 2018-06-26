@@ -1,0 +1,139 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build app (alt+ctrl+b)",
+            "group": "build",
+            "command": "make",
+            "type": "shell",
+            "args": [
+                "app"
+            ],
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            }
+        },
+        {
+            "label": "Run app (alt+ctrl+r)",
+            "type": "shell",
+            "windows": {
+                "command": "./task.sh",
+                "args": [
+                    "app-run"
+                ]
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            }
+        },
+        {
+            "label": "Clean app",
+            "command": "make",
+            "type": "shell",
+            "group": "build",
+            "args": [
+                "app-clean"
+            ],
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Flash app (alt+ctrl+f)",
+            "type": "shell",
+            "windows": {
+                "command": "./task.sh",
+                "args": [
+                    "app-flash"
+                ]
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Monitor (alt+ctrl+m)",
+            "type": "shell",
+            "windows": {
+                "command": "./task.sh",
+                "args": [
+                    "monitor"
+                ]
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "menuconfig",
+            "type": "process",
+            "windows": {
+                "command": "C:/msys32/mingw32.exe",
+                "args": [
+                    "make",
+                    "menuconfig"
+                ]
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "command line",
+            "type": "process",
+            "windows": {
+                "command": "C:/msys32/mingw32.exe",
+                "args": []
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "JTAG (OpenOCD) start (alt+ctrl+j)",
+            "type": "shell",
+            "windows": {
+                "command": "./task.sh",
+                "args": [
+                    "openocd"
+                ]
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": []
+            //  openocd.exe -s /mingw32/share/openocd/scripts -f /mingw32/share/openocd/scripts/interface/ftdi/um232h.cfg -f /mingw32/share/openocd/scripts/board/esp-wroom-32.cfg
+        },
+    ]
+}

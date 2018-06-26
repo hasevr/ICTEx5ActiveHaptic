@@ -1,0 +1,26 @@
+{
+    "C_Cpp.intelliSenseEngineFallback": "Enabled",
+    "files.associations": {
+        "stdio.h": "c",
+        "freertos.h": "c",
+        "gpio.h": "c",
+        "sdkconfig.h": "c",
+        "algorithm": "cpp",
+        "stuffedrobot.h": "c",
+        "task.h": "c",
+        "esp_int_wdt.h": "c",
+        "uart.h": "c",
+        "initializer_list": "cpp",
+        "utility": "cpp",
+        "event_groups.h": "c",
+        "esp_event_loop.h": "c"
+    },
+    "terminal.integrated.shell.windows": "c:\\msys32\\usr\\bin\\bash.exe",
+    "terminal.integrated.env.windows": {
+        "MSYSTEM": "MINGW32",
+        "CHERE_INVOKING": "1"
+    },
+    "terminal.integrated.shellArgs.windows": [
+        "-l"
+    ],
+}

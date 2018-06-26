@@ -1,0 +1,53 @@
+{
+    "configurations": [
+        {
+            "name": "ESP32-Win",
+            "includePath": [
+                "${workspaceRoot}",
+                "${workspaceRoot}/main",
+                "${workspaceRoot}/main/",
+                "C:/msys32/home/espressif/esp/esp-idf/components",
+                "C:/msys32/home/espressif/esp/esp-idf/components/freertos/include",
+                "C:/msys32/opt/xtensa-esp32-elf/lib/gcc/xtensa-esp32-elf/5.2.0/include",
+                "C:/msys32/opt/xtensa-esp32-elf/lib/gcc/xtensa-esp32-elf/5.2.0/include-fixed",
+                "C:/msys32/opt/xtensa-esp32-elf/xtensa-esp32-elf/include",
+                "C:/msys32/opt/xtensa-esp32-elf/xtensa-esp32-elf/sysroot/usr/include",
+                "C:/msys32/home/espressif/esp/esp-idf/components/nvs_flash/test_nvs_host",
+                "C:/msys32/home/espressif/esp/esp-idf/components/driver/include",
+                "C:/msys32/home/espressif/esp/esp-idf/components/esp32/include",
+                "C:/msys32/home/espressif/esp/esp-idf/components/soc/esp32/include",
+                "C:/msys32/home/espressif/esp/esp-idf/components/heap/include",
+                "C:/msys32/home/espressif/esp/esp-idf/components/soc/include",
+                "C:/msys32/home/espressif/esp/esp-idf/components/freertos/include/freertos",
+                "C:/msys32/opt/xtensa-esp32-elf/xtensa-esp32-elf/include/c++/5.2.0",
+                "C:/msys32/opt/xtensa-esp32-elf/xtensa-esp32-elf/include/c++/5.2.0/xtensa-esp32-elf",
+                "C:/msys32/home/espressif/esp/esp-idf/components/lwip/include/lwip",
+                "C:/msys32/home/espressif/esp/esp-idf/components/lwip/include/lwip/port",
+                "C:/msys32/home/espressif/esp/esp-idf/components/vfs/include",
+                "C:/msys32/home/espressif/esp/esp-idf/components/driver/include/driver",
+                "C:/msys32/home/espressif/esp/esp-idf/components/spi_flash/include",
+                "C:/msys32/home/espressif/esp/esp-idf/components/tcpip_adapter/include",
+                "C:/msys32/home/espressif/esp/esp-idf/components/log/include",
+                "C:/msys32/home/espressif/esp/esp-idf/components/nvs_flash/include",
+                "C:/msys32/home/espressif/esp/esp-idf/components/newlib/platform_include",
+                "C:/msys32/home/espressif/esp/esp-idf/components/mdns/include"
+            ],
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "${workspaceRoot}",
+                    "C:/msys32/opt/xtensa-esp32-elf/lib/gcc/xtensa-esp32-elf/5.2.0/include",
+                    "C:/msys32/opt/xtensa-esp32-elf/lib/gcc/xtensa-esp32-elf/5.2.0/include-fixed",
+                    "C:/msys32/opt/xtensa-esp32-elf/xtensa-esp32-elf/include",
+                    "C:/msys32/opt/xtensa-esp32-elf/xtensa-esp32-elf/sysroot/usr/include",
+                    "C:/msys32/home/espressif/esp/esp-idf/components"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": "${workspaceRoot}/.vscode/browse.vc.db"
+            },
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}
