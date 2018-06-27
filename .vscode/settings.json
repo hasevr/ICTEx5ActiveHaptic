@@ -13,7 +13,8 @@
         "initializer_list": "cpp",
         "utility": "cpp",
         "event_groups.h": "c",
-        "esp_event_loop.h": "c"
+        "esp_event_loop.h": "c",
+        "esp_log.h": "c"
     },
     "terminal.integrated.shell.windows": "c:\\msys32\\usr\\bin\\bash.exe",
     "terminal.integrated.env.windows": {

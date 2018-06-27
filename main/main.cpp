@@ -42,6 +42,7 @@ extern "C" void app_main()
     pwm_config.counter_mode = MCPWM_UP_COUNTER;
     pwm_config.duty_mode = MCPWM_DUTY_MODE_0;
     mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);    //Configure PWM0A with above settings
+    mcpwm_set_frequency(MCPWM_UNIT_0, MCPWM_TIMER_0, 20000);
     gpio_config_t conf;
     conf.pin_bit_mask = (1 << (25-1)) | (1 << (26-1));
     conf.mode = GPIO_MODE_OUTPUT;
@@ -54,17 +55,30 @@ extern "C" void app_main()
     //  Vibration feedback variable and coefficinets
     double time = -1;
     const double A = 1;
-    const double B = 1;
-    const double omega = 300 * M_PI * 2;
+    const double damp[] = {-10, -20, -30};
+    const int nDamp = sizeof(damp) / sizeof(damp[0]);
+    const double freq[] = {100, 200, 300, 500};
+    const int nFreq = sizeof(freq)/sizeof(freq[0]);
+    int i=0;
+    double omega = 0;
+    double B=0;
     while(1){
         int ad = adc1_get_raw(ADC1_CHANNEL_6);
-        if (ad > 2500){
+        if (ad < 2100) time = -1;
+        if (ad > 2400 && time == -1){
             time = 0;
+            omega = freq[i % nFreq] * M_PI * 2;
+            B = damp[i/nFreq];
+            ESP_LOGI(TAG, "%fHz, B=%f", omega/(M_PI*2), B);
+            i++;
+            if (i >= nFreq * nDamp) i = 0;
         }
         double pwm = 0;
         if (time >= 0){
-            pwm = A * sin (omega * time) * exp(B*time);
+            pwm = A * cos (omega * time) * exp(B*time);
             time += 0.001;
+        }else{
+            pwm = 0;
         }
         //  Rotating direction
         if (pwm > 0){
@@ -79,8 +93,9 @@ extern "C" void app_main()
         mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, pwm* 100);
         mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, MCPWM_DUTY_MODE_0);
         count ++;
-        if (count >= 100 ){
+        if (count >= 1000 ){
             ESP_LOGI(TAG, "ADC:%d", ad);
+            count = 0;
         }
         vTaskDelay(1);
     }
