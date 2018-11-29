@@ -44,7 +44,7 @@ extern "C" void app_main()
     mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);    //Configure PWM0A with above settings
     mcpwm_set_frequency(MCPWM_UNIT_0, MCPWM_TIMER_0, 20000);
     gpio_config_t conf;
-    conf.pin_bit_mask = (1 << (17-1)) | (1 << (5-1));
+    conf.pin_bit_mask = (1 << (17)) | (1 << (5));
     conf.mode = GPIO_MODE_OUTPUT;
     conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
     conf.pull_up_en = GPIO_PULLUP_DISABLE;
@@ -64,12 +64,15 @@ extern "C" void app_main()
     double B=0;
     while(1){
         int ad = adc1_get_raw(ADC1_CHANNEL_6);
-        if (ad < 2100) time = -1;
+        if (ad < 2100 && time > 0.3){
+            time = -1;
+            printf("\r\n");
+        }
         if (ad > 2400 && time == -1){
             time = 0;
             omega = freq[i % nFreq] * M_PI * 2;
             B = damp[i/nFreq];
-            ESP_LOGI(TAG, "%fHz, B=%f", omega/(M_PI*2), B);
+            printf("%fHz, B=%f ", omega/(M_PI*2), B);
             i++;
             if (i >= nFreq * nDamp) i = 0;
         }
@@ -84,11 +87,13 @@ extern "C" void app_main()
         if (pwm > 0){
             gpio_set_level(GPIO_NUM_5, 0);
             gpio_set_level(GPIO_NUM_17, 1);
+            if (time >= 0) printf("+");
         }else{
             gpio_set_level(GPIO_NUM_5, 1);
             gpio_set_level(GPIO_NUM_17, 0);
             pwm = -pwm;
-        }
+            if (time >= 0) printf("-");
+         }
         //  set duty rate of pwm
         mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, pwm* 100);
         mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, MCPWM_DUTY_MODE_0);
