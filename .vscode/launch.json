@@ -5,12 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         { 
-            "name": "(c/c++)OpenOCD Debug",
+            "name": "esp32-debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "build/${env:PROJECT_NAME}.elf",
+            "program": "${workspaceFolder}/build/ActiveHaptic.elf",
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
+            "msysDir": "C:\\msys64",
             //"preLaunchTask": "JTAG (OpenOCD) start (alt+ctrl+j)",
             "MIMode": "gdb",
             "miDebuggerPath": "C:/msys32/opt/xtensa-esp32-elf/bin/xtensa-esp32-elf-gdb.exe",

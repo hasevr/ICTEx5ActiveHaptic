@@ -32,7 +32,7 @@ extern "C" void app_main()
     adc1_config_channel_atten(ADC1_CHANNEL_6, ADC_ATTEN_DB_11);
     ESP_LOGI("main", "Initialize PWM");
     //1. mcpwm gpio initialization  
-    const int GPIO_PWM0A_OUT = 33;
+    const int GPIO_PWM0A_OUT = 16;
     mcpwm_gpio_init(MCPWM_UNIT_0, MCPWM0A, GPIO_PWM0A_OUT);
     //2. initial mcpwm configuration
     printf("Configuring Initial Parameters of mcpwm...\n");
@@ -44,7 +44,7 @@ extern "C" void app_main()
     mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);    //Configure PWM0A with above settings
     mcpwm_set_frequency(MCPWM_UNIT_0, MCPWM_TIMER_0, 20000);
     gpio_config_t conf;
-    conf.pin_bit_mask = (1 << (25-1)) | (1 << (26-1));
+    conf.pin_bit_mask = (1 << (17)) | (1 << (5));
     conf.mode = GPIO_MODE_OUTPUT;
     conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
     conf.pull_up_en = GPIO_PULLUP_DISABLE;
@@ -54,7 +54,7 @@ extern "C" void app_main()
     int count = 0;
     //  Vibration feedback variable and coefficinets
     double time = -1;
-    const double A = 1;
+    const double A = 2;
     const double damp[] = {-10, -20, -30};
     const int nDamp = sizeof(damp) / sizeof(damp[0]);
     const double freq[] = {100, 200, 300, 500};
@@ -64,12 +64,15 @@ extern "C" void app_main()
     double B=0;
     while(1){
         int ad = adc1_get_raw(ADC1_CHANNEL_6);
-        if (ad < 2100) time = -1;
+        if (ad < 2100 && time > 0.3){
+            time = -1;
+            printf("\r\n");
+        }
         if (ad > 2400 && time == -1){
             time = 0;
             omega = freq[i % nFreq] * M_PI * 2;
             B = damp[i/nFreq];
-            ESP_LOGI(TAG, "%fHz, B=%f", omega/(M_PI*2), B);
+            printf("Wave: %3.1fHz, A=%2.2f, B=%3.1f ", omega/(M_PI*2), A, B);
             i++;
             if (i >= nFreq * nDamp) i = 0;
         }
@@ -82,13 +85,15 @@ extern "C" void app_main()
         }
         //  Rotating direction
         if (pwm > 0){
-            gpio_set_level(GPIO_NUM_25, 0);
-            gpio_set_level(GPIO_NUM_26, 1);
+            gpio_set_level(GPIO_NUM_5, 0);
+            gpio_set_level(GPIO_NUM_17, 1);
+            if (time >= 0) printf("+");
         }else{
-            gpio_set_level(GPIO_NUM_25, 1);
-            gpio_set_level(GPIO_NUM_26, 0);
+            gpio_set_level(GPIO_NUM_5, 1);
+            gpio_set_level(GPIO_NUM_17, 0);
             pwm = -pwm;
-        }
+            if (time >= 0) printf("-");
+         }
         //  set duty rate of pwm
         mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, pwm* 100);
         mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, MCPWM_DUTY_MODE_0);

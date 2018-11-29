@@ -3,7 +3,7 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := stuffedRobot
+PROJECT_NAME := ActiveHaptic
 
 include $(IDF_PATH)/make/project.mk
 
