@@ -54,7 +54,7 @@ extern "C" void app_main()
     int count = 0;
     //  Vibration feedback variable and coefficinets
     double time = -1;
-    const double A = 1;
+    const double A = 2;
     const double damp[] = {-10, -20, -30};
     const int nDamp = sizeof(damp) / sizeof(damp[0]);
     const double freq[] = {100, 200, 300, 500};
@@ -72,7 +72,7 @@ extern "C" void app_main()
             time = 0;
             omega = freq[i % nFreq] * M_PI * 2;
             B = damp[i/nFreq];
-            printf("%fHz, B=%f ", omega/(M_PI*2), B);
+            printf("Wave: %3.1fHz, A=%2.2f, B=%3.1f ", omega/(M_PI*2), A, B);
             i++;
             if (i >= nFreq * nDamp) i = 0;
         }
