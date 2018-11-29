@@ -32,7 +32,7 @@ extern "C" void app_main()
     adc1_config_channel_atten(ADC1_CHANNEL_6, ADC_ATTEN_DB_11);
     ESP_LOGI("main", "Initialize PWM");
     //1. mcpwm gpio initialization  
-    const int GPIO_PWM0A_OUT = 33;
+    const int GPIO_PWM0A_OUT = 16;
     mcpwm_gpio_init(MCPWM_UNIT_0, MCPWM0A, GPIO_PWM0A_OUT);
     //2. initial mcpwm configuration
     printf("Configuring Initial Parameters of mcpwm...\n");
@@ -44,7 +44,7 @@ extern "C" void app_main()
     mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);    //Configure PWM0A with above settings
     mcpwm_set_frequency(MCPWM_UNIT_0, MCPWM_TIMER_0, 20000);
     gpio_config_t conf;
-    conf.pin_bit_mask = (1 << (25-1)) | (1 << (26-1));
+    conf.pin_bit_mask = (1 << (17-1)) | (1 << (5-1));
     conf.mode = GPIO_MODE_OUTPUT;
     conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
     conf.pull_up_en = GPIO_PULLUP_DISABLE;
@@ -82,11 +82,11 @@ extern "C" void app_main()
         }
         //  Rotating direction
         if (pwm > 0){
-            gpio_set_level(GPIO_NUM_25, 0);
-            gpio_set_level(GPIO_NUM_26, 1);
+            gpio_set_level(GPIO_NUM_5, 0);
+            gpio_set_level(GPIO_NUM_17, 1);
         }else{
-            gpio_set_level(GPIO_NUM_25, 1);
-            gpio_set_level(GPIO_NUM_26, 0);
+            gpio_set_level(GPIO_NUM_5, 1);
+            gpio_set_level(GPIO_NUM_17, 0);
             pwm = -pwm;
         }
         //  set duty rate of pwm
