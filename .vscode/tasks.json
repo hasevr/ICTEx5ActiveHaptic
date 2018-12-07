@@ -121,12 +121,12 @@
             "problemMatcher": []
         },
         {
-            "label": "JTAG (OpenOCD) start (alt+ctrl+j)",
+            "label": "Run flash all (alt+ctrl+a)",
             "type": "shell",
             "windows": {
                 "command": "./task.sh",
                 "args": [
-                    "openocd"
+                    "flash"
                 ]
             },
             "presentation": {

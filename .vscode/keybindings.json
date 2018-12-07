@@ -8,4 +8,6 @@
         "args": "Monitor (alt+ctrl+m)"},
     { "key": "alt+ctrl+r",         "command": "workbench.action.tasks.runTask",
         "args": "Run app (alt+ctrl+r)"},
+    { "key": "alt+ctrl+a",         "command": "workbench.action.tasks.runTask",
+        "args": "Run flash all (alt+ctrl+a)"},
 ]
