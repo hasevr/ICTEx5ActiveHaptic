@@ -13,66 +13,85 @@
 #include <math.h>
 const char* TAG = "main";
 
-void hapticTask(void* arg){
-    const char* TAG = "haptic";
-    //  counter for print adc value.
-    int count = 0;
-    //  time from tapping in second
-    double time = -1;
-    //  Vibration feedback variable and coefficinets
-    const double A = 2;
-    const double damp[] = {-10, -20, -30};
+//#define USE_TIMER   //  Whther use the timer or not. Without this definition, the function is called from a normal task.
+
+#ifdef USE_TIMER
+# define DT 0.0001  //  In the case of the timer, the minimum period is 50 micro second.
+#else
+# define DT (1.0/configTICK_RATE_HZ)  
+                    //  In the case of the task, the time period is the time slice of the OS specified in menuconfig,
+                    //  which is set to 1 ms=1 kHz.  
+#endif
+
+
+struct WaveParam{
+    const double damp[3] = {-10, -20, -30};
     const int nDamp = sizeof(damp) / sizeof(damp[0]);
-    const double freq[] = {100, 200, 300, 500};
+    const double freq[4] = {100, 200, 300, 500};
     const int nFreq = sizeof(freq)/sizeof(freq[0]);
-    int i=0;
-    double omega = 0;
-    double B=0;
+    const double amplitude = 2;
+} wave;    //  
+int count = 0;
+double time = -1;
+
+void hapticFunc(void* arg){
+    const char* TAG = "H_FUNC";
+    static int i;               //  An integer to select waveform. 
+    static double omega = 0;    //  angular frequency
+    static double B=0;          //  damping coefficient
+    int ad = adc1_get_raw(ADC1_CHANNEL_6);
+    if (ad < 2100 && time > 0.3){
+        time = -1;
+        printf("\r\n");
+    }
+    if (ad > 2400 && time == -1){   //  When the button is pushed after finishing to output an wave.
+        //  set the time to 0 and update the waveform parameters.
+        time = 0;
+        omega = wave.freq[i % wave.nFreq] * M_PI * 2;
+        B = wave.damp[i/wave.nFreq];
+        printf("Wave: %3.1fHz, A=%2.2f, B=%3.1f ", omega/(M_PI*2), wave.amplitude, B);
+        i++;
+        if (i >= wave.nFreq * wave.nDamp) i = 0;
+    }
+    //  Output the wave
+    double pwm = 0;
+    if (time >= 0){
+        pwm = wave.amplitude * cos (omega * time) * exp(B*time);
+        time += DT;
+    }else{
+        pwm = 0;
+    }
+    //  Rotating direction
+    if (pwm > 0){
+        gpio_set_level(GPIO_NUM_5, 0);
+        gpio_set_level(GPIO_NUM_17, 1);
+        if (time >= 0) printf("+");
+    }else{
+        gpio_set_level(GPIO_NUM_5, 1);
+        gpio_set_level(GPIO_NUM_17, 0);
+        pwm = -pwm;
+        if (time >= 0) printf("-");
+    }
+    if (pwm > 1) pwm = 1;
+    
+    //  Set duty rate of pwm
+    mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, pwm* 100);
+    mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, MCPWM_DUTY_MODE_0);
+    count ++;
+    if (count >= 1000 ){
+        ESP_LOGI(TAG, "ADC:%d", ad);
+        count = 0;
+    }
+}
+
+#ifndef USE_TIMER
+void hapticTask(void* arg){
     while(1){
-        int ad = adc1_get_raw(ADC1_CHANNEL_6);
-        if (ad < 2100 && time > 0.3){
-            time = -1;
-            printf("\r\n");
-        }
-        if (ad > 2400 && time == -1){
-            time = 0;
-            omega = freq[i % nFreq] * M_PI * 2;
-            B = damp[i/nFreq];
-            printf("Wave: %3.1fHz, A=%2.2f, B=%3.1f ", omega/(M_PI*2), A, B);
-            i++;
-            if (i >= nFreq * nDamp) i = 0;
-        }
-        double pwm = 0;
-        if (time >= 0){
-            pwm = A * cos (omega * time) * exp(B*time);
-            time += 0.001;
-        }else{
-            pwm = 0;
-        }
-        //  Rotating direction
-        if (pwm > 0){
-            gpio_set_level(GPIO_NUM_5, 0);
-            gpio_set_level(GPIO_NUM_17, 1);
-            if (time >= 0) printf("+");
-        }else{
-            gpio_set_level(GPIO_NUM_5, 1);
-            gpio_set_level(GPIO_NUM_17, 0);
-            pwm = -pwm;
-            if (time >= 0) printf("-");
-        }
-        if (pwm > 1) pwm = 1;
-        
-        //  set duty rate of pwm
-        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, pwm* 100);
-        mcpwm_set_duty_type(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, MCPWM_DUTY_MODE_0);
-        count ++;
-        if (count >= 1000 ){
-            ESP_LOGI(TAG, "ADC:%d", ad);
-            count = 0;
-        }
+        hapticFunc(arg);
         vTaskDelay(1);
     }
 }
+#endif
 
 extern "C" void app_main()
 {        
@@ -114,6 +133,19 @@ extern "C" void app_main()
     conf.intr_type = GPIO_INTR_DISABLE;
     gpio_config(&conf);
 
+#ifdef USE_TIMER
+    esp_timer_init();
+    esp_timer_create_args_t timerDesc={
+        callback: hapticFunc,
+        arg: NULL,
+        dispatch_method: ESP_TIMER_TASK,        
+        name: "haptic"
+    };
+    esp_timer_handle_t timerHandle = NULL;
+    esp_timer_create(&timerDesc, &timerHandle);
+    esp_timer_start_periodic(timerHandle, (int)(1000*1000*DT));     // period in micro second (100uS=10kHz)
+#else
     TaskHandle_t taskHandle = NULL;
     xTaskCreate(hapticTask, "Haptic", 1024 * 10, NULL, 6, &taskHandle);
+#endif
 }
