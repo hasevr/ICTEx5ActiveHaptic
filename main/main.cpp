@@ -65,12 +65,16 @@ void hapticFunc(void* arg){
     if (pwm > 0){
         gpio_set_level(GPIO_NUM_5, 0);
         gpio_set_level(GPIO_NUM_17, 1);
+#       ifndef USE_TIMER
         if (time >= 0) printf("+");
+#       endif
     }else{
         gpio_set_level(GPIO_NUM_5, 1);
         gpio_set_level(GPIO_NUM_17, 0);
         pwm = -pwm;
+#       ifndef USE_TIMER
         if (time >= 0) printf("-");
+#       endif
     }
     if (pwm > 1) pwm = 1;
     
