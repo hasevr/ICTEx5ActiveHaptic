@@ -152,4 +152,5 @@ extern "C" void app_main()
     TaskHandle_t taskHandle = NULL;
     xTaskCreate(hapticTask, "Haptic", 1024 * 10, NULL, 6, &taskHandle);
 #endif
+
 }
