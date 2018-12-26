@@ -8,6 +8,8 @@
 #include <esp_log.h>
 #include <esp_task_wdt.h>
 #include <esp_spi_flash.h>
+#include <rom/uart.h>
+#include <driver/uart.h>
 #include <driver/adc.h>
 #include <driver/mcpwm.h>
 #include <math.h>
@@ -153,4 +155,16 @@ extern "C" void app_main()
     xTaskCreate(hapticTask, "Haptic", 1024 * 10, NULL, 6, &taskHandle);
 #endif
 
+
+    uart_driver_install(UART_NUM_0, 1024, 1024, 10, NULL, 0);
+    while(1){
+        uint8_t ch;
+        uart_read_bytes(UART_NUM_0, &ch, 1, portMAX_DELAY);
+        printf("'%c' received.\r\n", ch);
+        switch(ch){
+            case 'a':
+            //  do something
+            break;
+        }
+    }
 }
