@@ -6,8 +6,8 @@
         {
             "name": "Win32",
             "includePath": [
-                "c:/Users/hase/Documents/PlatformIO/Projects/Test/include",
-                "c:/Users/hase/Documents/PlatformIO/Projects/Test/src",
+                "c:/home/hase/PlatformIO/Projects/Ex5Test/include",
+                "c:/home/hase/PlatformIO/Projects/Ex5Test/src",
                 "C:/Users/hase/.platformio/packages/framework-espidf/components/bt/bluedroid/stack/smp/include",
                 "C:/Users/hase/.platformio/packages/framework-espidf/components/bt/bluedroid/stack/sdp/include",
                 "C:/Users/hase/.platformio/packages/framework-espidf/components/bt/bluedroid/stack/rfcomm/include",
@@ -129,8 +129,8 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "c:/Users/hase/Documents/PlatformIO/Projects/Test/include",
-                    "c:/Users/hase/Documents/PlatformIO/Projects/Test/src",
+                    "c:/home/hase/PlatformIO/Projects/Ex5Test/include",
+                    "c:/home/hase/PlatformIO/Projects/Ex5Test/src",
                     "C:/Users/hase/.platformio/packages/framework-espidf/components/bt/bluedroid/stack/smp/include",
                     "C:/Users/hase/.platformio/packages/framework-espidf/components/bt/bluedroid/stack/sdp/include",
                     "C:/Users/hase/.platformio/packages/framework-espidf/components/bt/bluedroid/stack/rfcomm/include",
@@ -262,7 +262,7 @@
                 "HAVE_CONFIG_H",
                 "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\"",
                 "GCC_NOT_5_2_0=0",
-                "PROJECT_NAME=\"Test\"",
+                "PROJECT_NAME=\"Ex5Test\"",
                 "PROJECT_VER=\"1.0.0\"",
                 ""
             ],
