@@ -28,7 +28,7 @@
 
 const char* TAG = "main";
 
-#define USE_TIMER   //  Whther use the timer or not. Without this definition, the function is called from a normal task.
+//#define USE_TIMER   //  Whther use the timer or not. Without this definition, the function is called from a normal task.
 
 #ifdef USE_TIMER
 # define DT 0.0001  //  In the case of the timer, the minimum period is 50 micro second.
