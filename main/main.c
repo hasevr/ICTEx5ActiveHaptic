@@ -47,12 +47,18 @@ bdc_motor_handle_t motor = NULL;
 #define BDC_MCPWM_DUTY_TICK_MAX       (BDC_MCPWM_TIMER_RESOLUTION_HZ / BDC_MCPWM_FREQ_HZ) // maximum value we can set for the duty cycle, in ticks
 
 struct WaveParam{
-    const double damp[3] = {-2, -5, -10};
-    const int nDamp = sizeof(damp) / sizeof(damp[0]);
-    const double freq[9] = {10, 20, 50, 100, 200, 500, 1000, 2000, 5000};
-    const int nFreq = sizeof(freq)/sizeof(freq[0]);
-    const double amplitude = 2;
-} wave;    //  
+    const double damp[3];
+    const int nDamp;
+    const double freq[9];
+    const int nFreq;
+    const double amplitude;
+} wave = {
+    .damp = {-2, -5, -10},
+    .nDamp = sizeof(wave.damp) / sizeof(wave.damp[0]),
+    .freq = {10, 20, 50, 100, 200, 500, 1000, 2000, 5000},
+    .nFreq = sizeof(wave.freq)/sizeof(wave.freq[0]),
+    .amplitude = 2,
+};  
 int count = 0;
 double time = -1;
 
@@ -118,7 +124,7 @@ void hapticTask(void* arg){
 }
 #endif
 
-extern "C" void app_main(void)
+void app_main(void)
 {
     /* Print chip information */
     esp_chip_info_t chip_info;
