@@ -4,5 +4,7 @@
   "files.associations": {
     "gpio_periph.h": "c",
     "gpio_reg.h": "c"
-  }
+  },
+  "idf.portWin": "COM3",
+  "idf.flashType": "UART"
 }

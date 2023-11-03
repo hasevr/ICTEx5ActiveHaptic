@@ -23,11 +23,12 @@
 #include <driver/mcpwm_prelude.h>
 #include "driver/gpio.h"
 #include "bdc_motor.h"
+#include "esp_timer.h"
 #include <math.h>
 
 const char* TAG = "main";
 
-//#define USE_TIMER   //  Whther use the timer or not. Without this definition, the function is called from a normal task.
+#define USE_TIMER   //  Whther use the timer or not. Without this definition, the function is called from a normal task.
 
 #ifdef USE_TIMER
 # define DT 0.0001  //  In the case of the timer, the minimum period is 50 micro second.
@@ -41,11 +42,14 @@ const char* TAG = "main";
 static adc_oneshot_unit_handle_t adc1_handle;
 //  PWM control for bdc_motor
 bdc_motor_handle_t motor = NULL;
+#define BDC_MCPWM_TIMER_RESOLUTION_HZ 10000000 // 10MHz, 1 tick = 0.1us
+#define BDC_MCPWM_FREQ_HZ             25000    // 25KHz PWM
+#define BDC_MCPWM_DUTY_TICK_MAX       (BDC_MCPWM_TIMER_RESOLUTION_HZ / BDC_MCPWM_FREQ_HZ) // maximum value we can set for the duty cycle, in ticks
 
 struct WaveParam{
-    const double damp[3] = {-10, -20, -30};
+    const double damp[3] = {-2, -5, -10};
     const int nDamp = sizeof(damp) / sizeof(damp[0]);
-    const double freq[4] = {100, 200, 300, 500};
+    const double freq[9] = {10, 20, 50, 100, 200, 500, 1000, 2000, 5000};
     const int nFreq = sizeof(freq)/sizeof(freq[0]);
     const double amplitude = 2;
 } wave;    //  
@@ -96,7 +100,7 @@ void hapticFunc(void* arg){
     }
     if (pwm > 1) pwm = 1;    
     //  Set pwm duty rate
-    unsigned int speed = pwm * 100;
+    unsigned int speed = pwm * BDC_MCPWM_DUTY_TICK_MAX;
     bdc_motor_set_speed(motor, speed);
     count ++;
     if (count >= 1000 ){
@@ -113,13 +117,6 @@ void hapticTask(void* arg){
     }
 }
 #endif
-
-
-#define BDC_MCPWM_TIMER_RESOLUTION_HZ 10000000 // 10MHz, 1 tick = 0.1us
-#define BDC_MCPWM_FREQ_HZ             25000    // 25KHz PWM
-#define BDC_MCPWM_DUTY_TICK_MAX       (BDC_MCPWM_TIMER_RESOLUTION_HZ / BDC_MCPWM_FREQ_HZ) // maximum value we can set for the duty cycle, in ticks
-#define BDC_MCPWM_GPIO_A              5
-#define BDC_MCPWM_GPIO_B              17
 
 extern "C" void app_main(void)
 {
@@ -158,11 +155,27 @@ extern "C" void app_main(void)
         .ulp_mode = ADC_ULP_MODE_DISABLE,
     };
     ESP_ERROR_CHECK(adc_oneshot_new_unit(&adc_init_config1, &adc1_handle));
-    
+    static adc_oneshot_chan_cfg_t adc1_chan6_cfg = {
+        .atten = ADC_ATTEN_DB_11,
+        .bitwidth = ADC_BITWIDTH_12,
+    };
+    ESP_ERROR_CHECK(adc_oneshot_config_channel(adc1_handle, ADC_CHANNEL_6, &adc1_chan6_cfg));
+
+    ESP_LOGI(TAG, "Initialize GPIO");
+    gpio_config_t gpio_conf = {
+        .pin_bit_mask = 1 << 16,
+        .mode = GPIO_MODE_OUTPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = GPIO_INTR_DISABLE,
+    };
+    gpio_config(&gpio_conf);
+    gpio_set_level(GPIO_NUM_16, 1);
+
     ESP_LOGI(TAG, "Initialize PWM");
     bdc_motor_config_t motor_config = {
-        .pwma_gpio_num = BDC_MCPWM_GPIO_A,
-        .pwmb_gpio_num = BDC_MCPWM_GPIO_B,
+        .pwma_gpio_num = GPIO_NUM_5,
+        .pwmb_gpio_num = GPIO_NUM_17,
         .pwm_freq_hz = BDC_MCPWM_FREQ_HZ,
     };
     bdc_motor_mcpwm_config_t mcpwm_config = {
@@ -170,14 +183,15 @@ extern "C" void app_main(void)
         .resolution_hz = BDC_MCPWM_TIMER_RESOLUTION_HZ,
     };
     ESP_ERROR_CHECK(bdc_motor_new_mcpwm_device(&motor_config, &mcpwm_config, &motor));
+    ESP_ERROR_CHECK(bdc_motor_enable(motor));
 
 #ifdef USE_TIMER
-    esp_timer_init();
     esp_timer_create_args_t timerDesc={
         callback: hapticFunc,
         arg: NULL,
         dispatch_method: ESP_TIMER_TASK,        
-        name: "haptic"
+        name: "haptic",
+        skip_unhandled_events: true
     };
     esp_timer_handle_t timerHandle = NULL;
     esp_timer_create(&timerDesc, &timerHandle);
@@ -186,7 +200,6 @@ extern "C" void app_main(void)
     TaskHandle_t taskHandle = NULL;
     xTaskCreate(hapticTask, "Haptic", 1024 * 10, NULL, 6, &taskHandle);
 #endif
-
 
     uart_driver_install(UART_NUM_0, 1024, 1024, 10, NULL, 0);
     while(1){
