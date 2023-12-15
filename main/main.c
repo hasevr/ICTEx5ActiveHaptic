@@ -28,10 +28,10 @@
 
 const char* TAG = "main";
 
-//#define USE_TIMER   //  Whther use the timer or not. Without this definition, the function is called from a normal task.
+//#define USE_TIMER   //  Whether use the timer or not. Without this definition, the function is called from a regular task.//#define USE_TIMER   //  Whether use the timer or not. Without this definition, the function is called from a regular task.
 
 #ifdef USE_TIMER
-# define DT 0.0001  //  In the case of the timer, the minimum period is 50 micro second.
+# define DT 0.0001  //  10kHz. More than this requires ESP_TIMER_ISR.
 #else
 # define DT (1.0/configTICK_RATE_HZ)  
                     //  In the case of the task, the time period is the time slice of the OS specified in menuconfig,
@@ -42,9 +42,9 @@ const char* TAG = "main";
 static adc_oneshot_unit_handle_t adc1_handle;
 //  PWM control for bdc_motor
 bdc_motor_handle_t motor = NULL;
-#define BDC_MCPWM_TIMER_RESOLUTION_HZ 10000000 // 10MHz, 1 tick = 0.1us
-#define BDC_MCPWM_FREQ_HZ             25000    // 25KHz PWM
-#define BDC_MCPWM_DUTY_TICK_MAX       (BDC_MCPWM_TIMER_RESOLUTION_HZ / BDC_MCPWM_FREQ_HZ) // maximum value we can set for the duty cycle, in ticks
+#define BDC_MCPWM_TIMER_RESOLUTION_HZ 20000000 // 20MHz, 1 tick = 0.05us
+#define BDC_MCPWM_FREQ_HZ             50000    // 50KHz PWM
+#define BDC_MCPWM_DUTY_TICK_MAX       (BDC_MCPWM_TIMER_RESOLUTION_HZ / BDC_MCPWM_FREQ_HZ) // 400 = maximum value we can set for the duty cycle, in ticks
 
 struct WaveParam{
     const double damp[3];
@@ -201,7 +201,7 @@ void app_main(void)
     };
     esp_timer_handle_t timerHandle = NULL;
     esp_timer_create(&timerDesc, &timerHandle);
-    esp_timer_start_periodic(timerHandle, (int)(1000*1000*DT));     // period in micro second (100uS=10kHz)
+    esp_timer_start_periodic(timerHandle, (int)(1000*1000*DT));     //  period in micro second (100uS=10kHz). less than 50 us are not practical.
 #else
     TaskHandle_t taskHandle = NULL;
     xTaskCreate(hapticTask, "Haptic", 1024 * 10, NULL, 6, &taskHandle);
