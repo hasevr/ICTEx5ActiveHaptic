@@ -161,7 +161,7 @@ void app_main(void)
     };
     ESP_ERROR_CHECK(adc_oneshot_new_unit(&adc_init_config1, &adc1_handle));
     static adc_oneshot_chan_cfg_t adc1_chan6_cfg = {
-        .atten = ADC_ATTEN_DB_12,
+        .atten = ADC_ATTEN_DB_11,
         .bitwidth = ADC_BITWIDTH_12,
     };
     ESP_ERROR_CHECK(adc_oneshot_config_channel(adc1_handle, ADC_CHANNEL_6, &adc1_chan6_cfg));
