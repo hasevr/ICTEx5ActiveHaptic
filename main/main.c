@@ -17,7 +17,6 @@
 #include <esp_system.h>
 #include <esp_log.h>
 #include <esp_task_wdt.h>
-#include <rom/uart.h>
 #include <driver/uart.h>
 #include <esp_adc/adc_oneshot.h>
 #include <driver/mcpwm_prelude.h>
@@ -104,7 +103,7 @@ void hapticFunc(void* arg){
         if (time >= 0) printf("-");
 #       endif
     }
-    if (pwm > 1) pwm = 1;    
+    if (pwm > 1) pwm = 1;
     //  Set pwm duty rate
     unsigned int speed = pwm * BDC_MCPWM_DUTY_TICK_MAX;
     bdc_motor_set_speed(motor, speed);
@@ -162,7 +161,7 @@ void app_main(void)
     };
     ESP_ERROR_CHECK(adc_oneshot_new_unit(&adc_init_config1, &adc1_handle));
     static adc_oneshot_chan_cfg_t adc1_chan6_cfg = {
-        .atten = ADC_ATTEN_DB_11,
+        .atten = ADC_ATTEN_DB_12,
         .bitwidth = ADC_BITWIDTH_12,
     };
     ESP_ERROR_CHECK(adc_oneshot_config_channel(adc1_handle, ADC_CHANNEL_6, &adc1_chan6_cfg));
